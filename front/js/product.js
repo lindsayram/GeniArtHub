@@ -29,41 +29,41 @@ async function afficheProduct() {
                     </figure>`
                 article.insertAdjacentHTML('afterbegin', figure)
 
-            // console.log(recherche._id)
+            // console.log(compareId.declinaisons)
+
                 const div = document.querySelector('#details')
                 const infosArt = `
                     <h1>${compareId.titre}</h1>
                     <p>Plongez dans l'univers mystique de 'Bird', une œuvre d'art captivante qui transcende les limites de la réalité. Réalisée dans le style éthéré et spectral, cette pièce évoque la présence d'un oiseau envoûtant qui semble flotter dans l'au-delà.</p>
-                    <div class="price">
-                        <p>Acheter pour</p>
-                        <span class="showprice">35.25€</span>
-                    </div>
-                    <div class="declinaison">
-                        <input type="number" name="quantity" id="quantity" placeholder="1" value="1" minlength="1">
-                        <select name="format" id="format">
-                            
-                        </select>
-                    </div>
-                    <a class="button-buy" href="#">Buy ${compareId.shorttitle}</a>`
+                    `
                 div.insertAdjacentHTML('afterbegin', infosArt)
+                // console.log(compareId.declinaisons)
+                // Faire le menu SELECT
+                const select = document.querySelector('select')
+                console.log(compareId.declinaisons)
+
+                for(declinaison of compareId.declinaisons){
+                    // console.log(declinaison.taille)
+                    const format = `
+                        <option>${declinaison.taille}</option>`                   
+                    select.insertAdjacentHTML('afterbegin', format)
+                }
+                
+                const buy = document.querySelector(".button-buy")
+                buy.textContent = `Buy ${compareId.shorttitle}`
+                
+                const title2 = document.querySelector("h2")
+                title2.textContent = `Description de l'oeuvre : ${compareId.titre}`
             }
-        }
+
+                //Faire le aside
+        }       
     }catch(error) {
         console.error(`Une erreur est survenue : ${error}`)
     }
 }
 
 afficheProduct()
-//Liste SELECT
-// function afficher() {
-//     const liste = document.querySelector("select");
-//     const selection = liste.value;
-//     let sortie = document.querySelector("sortie");
-//     sortie.innerHTML = selection; -------------------------> bleu
-//   }
-
 
 
 //Modifier les quantités via localstorage et modifier le prix dans le panier ou product.html?
-
-//Afficher un menu déroulant avec des tailles différentes
