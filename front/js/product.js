@@ -11,17 +11,64 @@ const id = nbParam.get('id')
 
 //Classe pour les infos nécessaires au panier
 class Achat {
-    constructor(titre, image, format, prix){
+    constructor(id, titre, image, format, prix, quantity){
+        this.id = id
         this.titre = titre
         this.image = image
         this.format = format
-        this.prix = prix
+        this.prix = prix 
+        this.quantity = quantity       
     }
 
     afficherInfos(){
-        console.log(`Achat : ${this.titre} ${this.image} ${this.format} ${this.prix}`)
+        console.log(`Achat : ${this.id} ${this.titre} ${this.image} ${this.format} ${this.prix} ${this.quantity}`)
     }
 }
+
+//Fonction calcul des prix
+const select = document.querySelector('select')
+const price = document.querySelector('.showprice')
+const input = document.querySelector('#quantity')
+
+function calcul(x){
+    for(compareId of x){
+        if(id == compareId._id){
+            
+            let i = 0
+            for(declinaison of compareId.declinaisons){  
+                if(select.value == declinaison.taille){
+                    let priceAfficher = declinaison.prix * input.value
+                    price.textContent = priceAfficher
+                    console.log(priceAfficher)                   
+
+                    const monAchat = new Achat(id, compareId.titre, compareId.image, declinaison.taille, priceAfficher, input.value) 
+                    console.log(monAchat)
+
+                    const button = document.querySelector(".button-buy")
+                    button.addEventListener('click', (e) => {
+                        JSON.parse(localStorage.getItem("cart")) ?? monAchat
+                        console.log(monAchat)
+                        console.log(id,compareId.titre, compareId.image, declinaison.taille, priceAfficher, input.value)
+                        console.log(id)
+                        // On ne peut pas ajouter quelque chose de null
+                        if(input.value != 0){
+                            localStorage.setItem("cart", JSON.stringify(monAchat))
+
+                            //Ajouter une modale, pop up avec la liste des ajouts (bonus?) Sinon insérer un msg alert "ajouter au panier"
+                            document.querySelector("#message").textContent = "Ajouté au panier"
+                        }                       
+                    })                   
+                }                       
+            }                                                  
+        }
+    }
+}
+    // Après ajout, si le produit est le même, il faut modifier la quantité
+    // Si le produit est différent, on ajoute à la suite du localstorage
+    // if()
+    // innerText, récupérer le localstorage et ajouter d'autres objets au suivant
+    //Supprimer des objets selon les id? (autres fonctions?)
+
 
 //Comparer avec API
 async function afficheProduct() {
@@ -31,10 +78,6 @@ async function afficheProduct() {
             throw new Error (`Erreur HTTP : Statut : ${req.status}`)
         }
         const res = await req.json()
-
-        const select = document.querySelector('select')
-        console.log(select)
-        const price = document.querySelector('.showprice')
 
         let index = 0
         for(compareId of res){
@@ -72,43 +115,37 @@ async function afficheProduct() {
                 const indexTaille = format.selectedIndex
                                    
                 //Valeur par défaut, le prems
-                
-                price.textContent = `${compareId.declinaisons[0].prix}`             
+                price.textContent = compareId.declinaisons[0].prix             
                     
                 const buy = document.querySelector(".button-buy")
                 buy.textContent = `Buy ${compareId.shorttitle}`
                 
                 const title2 = document.querySelector("h2")
                 title2.textContent = `${compareId.description}`
-                
-                // Au clic au ajoute les éléments au panier
-                const button = document.querySelector(".button-buy")
             }
         }
+        // Appel de la fonction calcul avant les add.event pour pouvoir ajouter au panier les éléments par défaut
+        calcul(res)
+        
         // Si autre option, au clic, choisir autre prix
         //On compare les tailles sélectionnées avec les tailles du tableau/prix correspondant                    
-        select.addEventListener('change', () =>{
-            // console.log(select.value)
-            // console.log(declinaison.taille)
-            
-            for(compareId of res){
-                if(id == compareId._id){
-                    console.log(id)
-                    console.log(compareId._id)
-                    let i = 0
-                    for(declinaison of compareId.declinaisons){  
-                        if(select.value == declinaison.taille){
-                            // localStorage.setItem("taille", JSON.stringify(format.selectedIndex))
-                            price.textContent = `${declinaison.prix}`
-                            // console.log(select.value)
-                            // console.log(declinaison.taille)
-                            console.log(compareId.declinaisons)
-                        }                               
-                    }
-                }
-            }
+        select.addEventListener('change', (e) =>{
+            e.preventDefault;
+
+            // Revenir à quantity = 1, lorsqu'on change de format
+            input.value = 1
+
+            calcul(res)
+            // ajoutPanier()
         }) 
-       
+
+        input.addEventListener('input', (e) =>{
+            e.preventDefault;
+                        
+            calcul(res) 
+        })   
+        
+            
     }catch(error) {
         console.error(`Une erreur est survenue : ${error}`)
     }
