@@ -16,12 +16,11 @@ class Achat {
         this.titre = titre
         this.image = image
         this.format = format
-        this.prix = prix 
         this.quantity = quantity       
     }
 
     afficherInfos(){
-        console.log(`Achat : ${this.id} ${this.titre} ${this.image} ${this.format} ${this.prix} ${this.quantity}`)
+        console.log(`Achat : ${this.id} ${this.titre} ${this.image} ${this.format} ${this.quantity}`)
     }
 }
 
@@ -39,36 +38,78 @@ function calcul(x){
                 if(select.value == declinaison.taille){
                     let priceAfficher = declinaison.prix * input.value
                     price.textContent = priceAfficher
-                    console.log(priceAfficher)                   
+                    // console.log(priceAfficher)                   
 
-                    const monAchat = new Achat(id, compareId.titre, compareId.image, declinaison.taille, priceAfficher, input.value) 
-                    console.log(monAchat)
+                    const monAchat = new Achat(id, compareId.titre, compareId.image, declinaison.taille, input.value) 
+                    // console.log(monAchat)
 
-                    const button = document.querySelector(".button-buy")
-                    button.addEventListener('click', (e) => {
-                        JSON.parse(localStorage.getItem("cart")) ?? monAchat
-                        console.log(monAchat)
-                        console.log(id,compareId.titre, compareId.image, declinaison.taille, priceAfficher, input.value)
-                        console.log(id)
-                        // On ne peut pas ajouter quelque chose de null
-                        if(input.value != 0){
-                            localStorage.setItem("cart", JSON.stringify(monAchat))
-
-                            //Ajouter une modale, pop up avec la liste des ajouts (bonus?) Sinon insérer un msg alert "ajouter au panier"
-                            document.querySelector("#message").textContent = "Ajouté au panier"
-                        }                       
-                    })                   
-                }                       
-            }                                                  
-        }
+                    // let tableauAchats = Array.from(Achat)
+                    // console.log(tableauAchats) 
+                    ajoutPanier(monAchat)                      
+                }                
+            }                       
+        }                                                  
     }
 }
-    // Après ajout, si le produit est le même, il faut modifier la quantité
     // Si le produit est différent, on ajoute à la suite du localstorage
-    // if()
-    // innerText, récupérer le localstorage et ajouter d'autres objets au suivant
-    //Supprimer des objets selon les id? (autres fonctions?)
+        
+        
+function ajoutPanier(monAchat){
+    const button = document.querySelector(".button-buy")
+    button.addEventListener('click', async(e) => {
+        e.preventDefault;
 
+        // // On ne peut pas ajouter quelque chose de null
+        if(input.value != 0 && input.value != ""){
+            const cartsData =  JSON.parse(localStorage.getItem("element")) ?? monAchat
+            // console.log(input.value)
+            // console.log(cartsData)           
+            
+
+            // Après ajout, si le produit est le même, avec le même format il faut modifier la quantité
+            for(cartData in cartsData){ 
+             console.log(cartsData.id)
+                    // revoir cette condition...                           
+                if(id == cartsData.id && select.value == cartsData.format && input.value != cartsData['quantity']){
+                    console.log(input.value) 
+                    console.log(cartsData['quantity']) 
+                    
+                    // cartsData['quantity'] += input.value
+                    // console.log(cartsData.quantity)
+                    
+                    localStorage.setItem("element", JSON.stringify(monAchat))
+                    //Ajouter une modale, pop up avec la liste des ajouts (bonus?) Sinon insérer un msg alert "ajouter au panier"
+                    document.querySelector("#message").textContent = "Ajouté au panier"                       
+                } 
+                if(id == cartsData.id && select.value != cartsData.format){
+                    // si le nom de la clé existe, alors i+?
+                    localStorage.setItem("element2", JSON.stringify(monAchat))
+                    // const envoiAuPanier = await fetch(`http://localhost:3000/api/products/${id}`, {
+                    //     method:'Post',
+                    //     body:JSON.stringify(monAchat),
+                    //     headers:{
+                    //         'Content-type' : 'application/json',
+                    //     }                             
+                    // })
+                    //Ajouter une modale, pop up avec la liste des ajouts (bonus?) Sinon insérer un msg alert "ajouter au panier"
+                    document.querySelector("#message").textContent = "Ajouté au panier"
+                } 
+                if(id!=cartsData.id) {
+                localStorage.setItem("element3", JSON.stringify(monAchat))
+                // const envoiAuPanier = await fetch(`http://localhost:3000/api/products/${id}`, {
+                //     method:'Post',
+                //     body:JSON.stringify(monAchat),
+                //     headers:{
+                //         'Content-type' : 'application/json',
+                //     }
+                // })
+                //Ajouter une modale, pop up avec la liste des ajouts (bonus?) Sinon insérer un msg alert "ajouter au panier"
+                document.querySelector("#message").textContent = "Ajouté au panier"
+                }  
+            } 
+        }                            
+    })                                            
+}
 
 //Comparer avec API
 async function afficheProduct() {
@@ -126,7 +167,7 @@ async function afficheProduct() {
         }
         // Appel de la fonction calcul avant les add.event pour pouvoir ajouter au panier les éléments par défaut
         calcul(res)
-        
+
         // Si autre option, au clic, choisir autre prix
         //On compare les tailles sélectionnées avec les tailles du tableau/prix correspondant                    
         select.addEventListener('change', (e) =>{
@@ -153,4 +194,3 @@ async function afficheProduct() {
 
 afficheProduct()
 
-//Modifier les quantités via localstorage et modifier le prix dans le panier ou product.html?
