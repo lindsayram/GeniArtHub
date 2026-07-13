@@ -37,7 +37,7 @@ function calcul(x){
             for(declinaison of compareId.declinaisons){  
                 if(select.value == declinaison.taille){
                     let priceAfficher = declinaison.prix * input.value
-                    price.textContent = priceAfficher
+                    price.textContent = `${priceAfficher}€`
                     // console.log(priceAfficher)                   
 
                     const monAchat = new Achat(id, compareId.titre, compareId.image, declinaison.taille, input.value) 
